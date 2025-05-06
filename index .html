@@ -1,0 +1,210 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Preferences with Animations</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .preference-form {
+            background-color: hsl(0, 23%, 36%);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .animation-box {
+            width: 200px;
+            height: 200px;
+            background-color: #4CAF50;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #dfabc7;
+            font-weight: bold;
+            margin: 20px auto;
+        }
+        
+        /* Animation definitions */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        /* Animation classes */
+        .spin-animation {
+            animation: spin 2s linear infinite;
+        }
+        
+        .pulse-animation {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        .bounce-animation {
+            animation: bounce 1s ease infinite;
+        }
+    </style>
+</head>
+<body>
+    <h1>User Preferences with Animations</h1>
+    
+    <div class="preference-form">
+        <h2>Set Your Preferences</h2>
+        <form id="preferenceForm">
+            <div>
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username">
+            </div>
+            
+            <div>
+                <label for="color">Favorite Color:</label>
+                <select id="color" name="color">
+                    <option value="#4CAF50">Green</option>
+                    <option value="#2196F3">Blue</option>
+                    <option value="#F44336">Red</option>
+                    <option value="#FFC107">Yellow</option>
+                </select>
+            </div>
+            
+            <div>
+                <label>Preferred Animation:</label>
+                <div>
+                    <input type="radio" id="spin" name="animation" value="spin" checked>
+                    <label for="spin">Spin</label>
+                </div>
+                <div>
+                    <input type="radio" id="pulse" name="animation" value="pulse">
+                    <label for="pulse">Pulse</label>
+                </div>
+                <div>
+                    <input type="radio" id="bounce" name="animation" value="bounce">
+                    <label for="bounce">Bounce</label>
+                </div>
+            </div>
+            
+            <button type="submit">Save Preferences</button>
+        </form>
+    </div>
+    
+    <div class="animation-box" id="animationBox">
+        Watch me animate!
+    </div>
+    
+    <button id="triggerAnimation">Trigger Animation</button>
+    
+    <script>
+        // DOM elements
+        const preferenceForm = document.getElementById('preferenceForm');
+        const animationBox = document.getElementById('animationBox');
+        const triggerButton = document.getElementById('triggerAnimation');
+        
+        // Load saved preferences when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPreferences();
+        });
+        
+        // Save preferences when form is submitted
+        preferenceForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            savePreferences();
+        });
+        
+        // Trigger animation when button is clicked
+        triggerButton.addEventListener('click', function() {
+            triggerAnimation();
+        });
+        
+        // Function to save user preferences to localStorage
+        function savePreferences() {
+            const username = document.getElementById('username').value;
+            const color = document.getElementById('color').value;
+            const animation = document.querySelector('input[name="animation"]:checked').value;
+            
+            // Save to localStorage
+            localStorage.setItem('userPreferences', JSON.stringify({
+                username,
+                color,
+                animation
+            }));
+            
+            alert('Preferences saved!');
+            
+            // Apply preferences
+            applyPreferences();
+        }
+        
+        // Function to load user preferences from localStorage
+        function loadPreferences() {
+            const savedPreferences = localStorage.getItem('userPreferences');
+            
+            if (savedPreferences) {
+                const preferences = JSON.parse(savedPreferences);
+                
+                // Set form values
+                document.getElementById('username').value = preferences.username || '';
+                document.getElementById('color').value = preferences.color || '#4CAF50';
+                
+                // Set radio button
+                const radio = document.getElementById(preferences.animation);
+                if (radio) {
+                    radio.checked = true;
+                }
+                
+                // Apply preferences
+                applyPreferences();
+            }
+        }
+        
+        // Function to apply the saved preferences
+        function applyPreferences() {
+            const savedPreferences = localStorage.getItem('userPreferences');
+            
+            if (savedPreferences) {
+                const preferences = JSON.parse(savedPreferences);
+                
+                // Set box color
+                animationBox.style.backgroundColor = preferences.color;
+                
+                // Remove all animation classes
+                animationBox.classList.remove('spin-animation', 'pulse-animation', 'bounce-animation');
+            }
+        }
+        
+        // Function to trigger the animation
+        function triggerAnimation() {
+            const savedPreferences = localStorage.getItem('userPreferences');
+            
+            if (savedPreferences) {
+                const preferences = JSON.parse(savedPreferences);
+                
+                // Remove all animation classes first
+                animationBox.classList.remove('spin-animation', 'pulse-animation', 'bounce-animation');
+                
+                // Add the selected animation class
+                animationBox.classList.add(`${preferences.animation}-animation`);
+            } else {
+                alert('Please save your preferences first!');
+            }
+        }
+    </script>
+</body>
+</html>
